@@ -10,18 +10,14 @@ class Recipe(models.Model):
         User,
         help_text='Автор рецепта',
         on_delete=models.CASCADE,
-        verbose_name='Автор',
-        verbose_name_plural='Авторы',
     )
     name = models.CharField(
         'Название',
+        unique=True,
         max_length=200,
-        verbose_name='Название',
-        verbose_name_plural='Названия',
     )
     image = models.ImageField(
         upload_to='recipe',
-        verbose_name='Изображение',
     )
     description = models.TextField(
         'Описание'
@@ -33,3 +29,5 @@ class Recipe(models.Model):
 
     class Meta:
         default_related_name = 'recipes'
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
