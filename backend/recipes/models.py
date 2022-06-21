@@ -17,23 +17,35 @@ class Tag(models.Model):
         validators=[HexColorValidator],
         unique=True,
     )
+    slug = models.SlugField(
+        unique=True
+    )
+    REQUIRED_FIELDS = (
+        'name',
+        'color',
+        'slug',
+    )
 
 
-class IngridientInRecipe(models.Model):
+class IngridientRecipe(models.Model):
     amount = models.IntegerField()
     ingridient = models.ForeignKey(
         'Ingridient',
         on_delete=models.CASCADE,
     )
+    recipe = models.ForeignKey(
+        'Recipe',
+        on_delete=models.CASCADE
+    )
 
-    @property
-    def name(self):
-        return self.ingridient.name
+    class Meta:
+        default_related_name = 'ingridients'
 
 
 class Ingridient(models.Model):
     name = models.CharField(
         max_length=255,
+        unique=True,
     )
     measurement_unit = models.CharField(
         max_length=255,
@@ -54,18 +66,14 @@ class Recipe(models.Model):
     image = models.ImageField(
         upload_to='recipe/',
     )
-    description = models.TextField(
+    text = models.TextField(
         'Описание'
-    )
-    time = models.DateTimeField(
-        'Время публикации рецепта',
-        auto_now_add=True,
     )
     tags = models.ManyToManyField(
         'Tag',
     )
     ingridients = models.ManyToManyField(
-        'Ingridient',
+        'IngridientInRecipe',
     )
     cooking_time = models.IntegerField(
         validators=(
