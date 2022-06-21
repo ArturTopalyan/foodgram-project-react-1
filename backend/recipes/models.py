@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.db import models
 from django.core.validators import MinValueValidator
+from django.db import models
+
 from .validators import HexColorValidator
 
 User = get_user_model()
@@ -19,13 +20,12 @@ class Tag(models.Model):
 
 
 class IngridientInRecipe(models.Model):
-    amount = models.IntegerField(
-    )
+    amount = models.IntegerField()
     ingridient = models.ForeignKey(
         'Ingridient',
         on_delete=models.CASCADE,
     )
-    
+
     @property
     def name(self):
         return self.ingridient.name
