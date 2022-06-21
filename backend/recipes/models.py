@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import constraints
 
 from .validators import HexColorValidator
 
@@ -106,3 +107,45 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+    )
+    author = models.ForeignKey(
+        User,
+        related_name='following',
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        constraints = (
+            constraints.UniqueConstraint(
+                fields=('user', 'author'),
+                name='unique_follow',
+            )
+        )
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorite',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='followers',
+    )
+
+    class Meta:
+        constraints = (
+            constraints.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='unique_favorite',
+            )
+        )
