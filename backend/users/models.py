@@ -10,12 +10,24 @@ class User(AbstractUser):
         default=uuid.uuid4,
         editable=False,
     )
+    is_blocked = models.BooleanField(
+        default=False,
+    )
+    cart = models.ManyToManyField(
+        'recipes.Recipe',
+        related_name='carted'
+    )
+    favorite = models.ManyToManyField(
+        'recipes.Recipe',
+        related_name='favorites'
+    )
+    follow = models.ManyToManyField('self')
     REQUIRED_FIELDS = [
         'email',
         'first_name',
         'last_name',
     ]
 
-    @property
-    def blocked(self):
-        return not self.is_active
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'

@@ -18,28 +18,15 @@ class Tag(models.Model):
         unique=True,
     )
     slug = models.SlugField(
-        unique=True
-    )
-    REQUIRED_FIELDS = (
-        'name',
-        'color',
-        'slug',
-    )
-
-
-class IngridientRecipe(models.Model):
-    amount = models.IntegerField()
-    ingridient = models.ForeignKey(
-        'Ingridient',
-        on_delete=models.CASCADE,
-    )
-    recipe = models.ForeignKey(
-        'Recipe',
-        on_delete=models.CASCADE
+        unique=True,
     )
 
     class Meta:
-        default_related_name = 'ingridients'
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
+    def __str__(self):
+        return self.name
 
 
 class Ingridient(models.Model):
@@ -51,10 +38,33 @@ class Ingridient(models.Model):
         max_length=255,
     )
 
+    class Meta:
+        verbose_name = 'Ингридиент'
+        verbose_name_plural = 'Ингридиенты'
+
+    def __str__(self):
+        return self.name
+
+
+class IngridientRecipe(models.Model):
+    amount = models.IntegerField()
+    ingridient = models.ForeignKey(
+        Ingridient,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        default_related_name = 'ingridients'
+        verbose_name = 'Ингридиент в рецепте'
+        verbose_name_plural = 'Ингридиенты в рецепте'
+
+    def __str__(self):
+        return str(self.ingridient)
+
 
 class Recipe(models.Model):
     author = models.ForeignKey(
-        'users.User',
+        User,
         help_text='Автор рецепта',
         on_delete=models.CASCADE,
     )
@@ -70,10 +80,10 @@ class Recipe(models.Model):
         'Описание'
     )
     tags = models.ManyToManyField(
-        'Tag',
+        Tag,
     )
     ingridients = models.ManyToManyField(
-        'IngridientInRecipe',
+        IngridientRecipe,
     )
     cooking_time = models.IntegerField(
         validators=(
@@ -83,8 +93,16 @@ class Recipe(models.Model):
             ),
         )
     )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        editable=False,
+    )
 
     class Meta:
+        ordering = ('-pub_date',)
         default_related_name = 'recipes'
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+
+    def __str__(self):
+        return self.name
