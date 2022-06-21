@@ -1,26 +1,21 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
 class User(AbstractUser):
-    password = models.CharField(
-        max_length=128,
-        help_text=(
-            'Ваш пароль не должен совпадать с вашим именем или другой '
-            'персональной информацией или быть слишком похожим на неё.\nВаш '
-            'пароль должен содержать как минимум 8 символов.\nВаш пароль не '
-            'может быть одним из широко распространённых паролей.\nВаш пароль '
-            'не может состоять только из цифр.\nВаш пароль не должен совпадать'
-            ' с вашим именем или другой персональной информацией или быть '
-            'слишком похожим на неё.\nВаш пароль должен содержать как минимум '
-            '8 символов.\nВаш пароль не может быть одним из широко '
-            'распространённых паролей.\nВаш пароль не может состоять только '
-            'из цифр.'
-        ),
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
     )
     REQUIRED_FIELDS = [
         'email',
-        'password',
         'first_name',
         'last_name',
     ]
+
+    @property
+    def blocked(self):
+        return not self.is_active
