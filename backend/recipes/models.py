@@ -3,23 +3,29 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import constraints
 
-from .validators import HexColorValidator
+from colorfield.fields import ColorField
+
+from .validators import SlugValidator
 
 User = get_user_model()
 
 
 class Tag(models.Model):
     name = models.CharField(
+        'Название',
         max_length=200,
         unique=True,
     )
-    color = models.CharField(
-        max_length=7,
-        validators=[HexColorValidator],
+    color = ColorField(
+        help_text='Цветовой HEX-код (например, #49B64E)',
         unique=True,
     )
     slug = models.SlugField(
+        'slug',
         unique=True,
+        validators=(
+            SlugValidator,
+        ),
     )
 
     class Meta:
@@ -32,35 +38,32 @@ class Tag(models.Model):
 
 class Ingridient(models.Model):
     name = models.CharField(
+        'Название',
         max_length=255,
-        unique=True,
     )
     measurement_unit = models.CharField(
+        'Единицы измерения',
         max_length=255,
     )
 
     class Meta:
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
+        constraints = (
+            constraints.UniqueConstraint(
+                fields=(
+                    'name',
+                    'measurement_unit',
+                ),
+                name='unique_name_measurement_unit',
+            ),
+        )
 
     def __str__(self):
-        return self.name
-
-
-class IngridientRecipe(models.Model):
-    amount = models.IntegerField()
-    ingridient = models.ForeignKey(
-        Ingridient,
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        default_related_name = 'ingridients'
-        verbose_name = 'Ингридиент в рецепте'
-        verbose_name_plural = 'Ингридиенты в рецепте'
-
-    def __str__(self):
-        return str(self.ingridient)
+        return '%(name)s, %(measurement_unit)s' % {
+            'name': self.name,
+            'measurement_unit': self.measurement_unit,
+        }
 
 
 class Recipe(models.Model):
@@ -68,40 +71,46 @@ class Recipe(models.Model):
         User,
         help_text='Автор рецепта',
         on_delete=models.CASCADE,
+        related_name='recipes',
     )
     name = models.CharField(
-        'Название',
+        'Название рецепта',
         unique=True,
         max_length=200,
     )
     image = models.ImageField(
+        help_text='Фотография готового блюда.',
         upload_to='recipe/',
     )
     text = models.TextField(
-        'Описание'
+        'Описание рецепта'
     )
     tags = models.ManyToManyField(
         Tag,
+        help_text='тэги рецепта',
+        through='TagInRecipe',
     )
     ingridients = models.ManyToManyField(
-        IngridientRecipe,
+        Ingridient,
+        help_text='ингридиенты, необходимые для приготовления блюда',
+        through='IngridientInRecipe',
     )
     cooking_time = models.IntegerField(
         validators=(
             MinValueValidator(
                 1,
-                'Укажите время, большее чем 1'
+                'Укажите время, не меньшее, чем 1'
             ),
         )
     )
     pub_date = models.DateTimeField(
+        'Время публикации рецепта',
         auto_now_add=True,
         editable=False,
     )
 
     class Meta:
         ordering = ('-pub_date',)
-        default_related_name = 'recipes'
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -113,20 +122,20 @@ class Follow(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='follower',
+        related_name='followers',
     )
     author = models.ForeignKey(
         User,
-        related_name='following',
         on_delete=models.CASCADE,
+        related_name='following',
     )
 
     class Meta:
         constraints = (
             constraints.UniqueConstraint(
                 fields=('user', 'author'),
-                name='unique_follow',
-            )
+                name='unique_follow_user_author',
+            ),
         )
 
 
@@ -147,5 +156,69 @@ class Favorite(models.Model):
             constraints.UniqueConstraint(
                 fields=('user', 'recipe'),
                 name='unique_favorite',
-            )
+            ),
         )
+
+
+class Cart(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        related_name='carts',
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        User,
+        related_name='carts',
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        constraints = (
+            constraints.UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='unique_cart',
+            ),
+        )
+
+
+class IngridientInRecipe(models.Model):
+    amount = models.IntegerField(
+        'Количество ингридиента в рецепте',
+        validators=(
+            MinValueValidator(
+                limit_value=0,
+            ),
+        )
+    )
+    ingridient = models.ForeignKey(
+        Ingridient,
+        on_delete=models.CASCADE,
+        related_name='recipes',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='ingridient',
+    )
+
+    class Meta:
+        verbose_name = 'Ингридиент в рецепте'
+        verbose_name_plural = 'Ингридиенты в рецепте'
+
+    def __str__(self):
+        return '%(amount)s %(ingridient)s' % {
+            'amount': self.amount,
+            'ingridient': self.ingridient,
+        }
+
+
+class TagInRecipe(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+    )
+    tag = models.ForeignKey(
+        Tag,
+        related_name='recipes',
+        on_delete=models.CASCADE,
+    )

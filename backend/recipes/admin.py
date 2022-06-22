@@ -22,7 +22,7 @@ class IngridientAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-@admin.register(models.IngridientRecipe)
+@admin.register(models.IngridientInRecipe)
 class IngridientRecipeAdmin(admin.ModelAdmin):
     fields = (
         'amount',
@@ -37,14 +37,11 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
         'name',
         'image',
-        'tags',
-        'ingridients',
         'text',
         'cooking_time',
     )
     list_filter = (
         'author',
-        'tags',
         'name',
     )
     empty_value_display = '-пусто-'
