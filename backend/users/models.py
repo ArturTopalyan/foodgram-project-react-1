@@ -1,11 +1,10 @@
 import uuid
-from django.contrib.auth.hashers import make_password
 
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.db import models
-from django.core.exceptions import FieldError
 from django.apps import apps
-
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import AbstractUser, UserManager
+from django.core.exceptions import FieldError
+from django.db import models
 
 
 class CustomUserManager(UserManager):
@@ -29,11 +28,11 @@ class CustomUserManager(UserManager):
             if field is None:
                 raise FieldError(message)
         email = self.normalize_email(email)
-        GlobalUserModel = apps.get_model(
+        global_user_model = apps.get_model(
             self.model._meta.app_label,
             self.model._meta.object_name,
         )
-        username = GlobalUserModel.normalize_username(username)
+        username = global_user_model.normalize_username(username)
         user = self.model(
             username=username,
             email=email,
