@@ -13,6 +13,14 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+@admin.register(models.TagInRecipe)
+class TagInRecipeAdmin(admin.ModelAdmin):
+    fields = (
+        'tag',
+        'recipe',
+    )
+
+
 @admin.register(models.Ingridient)
 class IngridientAdmin(admin.ModelAdmin):
     fields = (
@@ -23,12 +31,11 @@ class IngridientAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.IngridientInRecipe)
-class IngridientRecipeAdmin(admin.ModelAdmin):
+class IngridientInRecipeAdmin(admin.ModelAdmin):
     fields = (
-        'amount',
         'ingridient',
+        'recipe',
     )
-    empty_value_display = '-пусто-'
 
 
 @admin.register(models.Recipe)
@@ -40,8 +47,28 @@ class RecipeAdmin(admin.ModelAdmin):
         'text',
         'cooking_time',
     )
+    filter_horizontal = (
+        'ingridients',
+        'tags',
+    )
     list_filter = (
         'author',
         'name',
     )
     empty_value_display = '-пусто-'
+
+
+@admin.register(models.Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    fields = (
+        'user',
+        'recipe',
+    )
+
+
+@admin.register(models.Cart)
+class CartAdmin(admin.ModelAdmin):
+    fields = (
+        'recipe',
+        'user',
+    )

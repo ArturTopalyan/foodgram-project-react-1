@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User
+from .models import Follow, User
 
 
 @admin.action(description='Забанить смертного')
@@ -33,4 +33,12 @@ class UserAdmin(UserAdmin):
     actions = (
         ban_user,
         unban_user,
+    )
+
+
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    fields = (
+        'user',
+        'author',
     )
