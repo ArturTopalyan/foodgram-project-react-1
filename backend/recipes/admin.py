@@ -27,6 +27,9 @@ class IngridientAdmin(admin.ModelAdmin):
         'name',
         'measurement_unit',
     )
+    list_filter = (
+        'name',
+    )
     empty_value_display = '-пусто-'
 
 
@@ -47,6 +50,10 @@ class RecipeAdmin(admin.ModelAdmin):
         'image',
         'text',
         'cooking_time',
+    )
+    list_display = (
+        'name',
+        'author',
     )
     list_filter = (
         'author',
