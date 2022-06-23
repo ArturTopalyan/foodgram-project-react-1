@@ -22,11 +22,11 @@ class User(AbstractUser):
         help_text='Адрес электронной почты'
     )
     first_name = models.CharField(
-        'Имя пользователя',
+        'Имя',
         max_length=150,
     )
     last_name = models.CharField(
-        'Фамилия пользователя',
+        'Фамилия',
         max_length=150,
     )
 

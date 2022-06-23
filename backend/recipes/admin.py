@@ -35,6 +35,7 @@ class IngridientInRecipeAdmin(admin.ModelAdmin):
     fields = (
         'ingridient',
         'recipe',
+        'amount',
     )
 
 
@@ -46,10 +47,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'image',
         'text',
         'cooking_time',
-    )
-    filter_horizontal = (
-        'ingridients',
-        'tags',
     )
     list_filter = (
         'author',
