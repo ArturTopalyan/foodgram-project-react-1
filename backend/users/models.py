@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.exceptions import FieldError
 from django.db import models
+from django.db.models import constraints
 
 
 class CustomUserManager(UserManager):
@@ -133,3 +134,24 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='followers',
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+    )
+
+    class Meta:
+        constraints = (
+            constraints.UniqueConstraint(
+                fields=('user', 'author'),
+                name='unique_follow_user_author',
+            ),
+        )

@@ -94,7 +94,8 @@ class Recipe(models.Model):
         help_text='ингридиенты, необходимые для приготовления блюда',
         through='IngridientInRecipe',
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
+        'Время приготовления блюда',
         validators=(
             MinValueValidator(
                 1,
@@ -106,6 +107,7 @@ class Recipe(models.Model):
         'Время публикации рецепта',
         auto_now_add=True,
         editable=False,
+        db_index=True,
     )
 
     class Meta:
@@ -115,27 +117,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Follow(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='followers',
-    )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='following',
-    )
-
-    class Meta:
-        constraints = (
-            constraints.UniqueConstraint(
-                fields=('user', 'author'),
-                name='unique_follow_user_author',
-            ),
-        )
 
 
 class Favorite(models.Model):
@@ -162,16 +143,15 @@ class Favorite(models.Model):
 class Cart(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        related_name='carts',
         on_delete=models.CASCADE,
     )
     user = models.ForeignKey(
         User,
-        related_name='carts',
         on_delete=models.CASCADE,
     )
 
     class Meta:
+        default_related_name = 'carts'
         constraints = (
             constraints.UniqueConstraint(
                 fields=('user', 'recipe'),
@@ -181,33 +161,37 @@ class Cart(models.Model):
 
 
 class IngridientInRecipe(models.Model):
-    amount = models.IntegerField(
+    amount = models.PositiveIntegerField(
         'Количество ингридиента в рецепте',
-        validators=(
-            MinValueValidator(
-                limit_value=0,
-            ),
-        )
     )
     ingridient = models.ForeignKey(
         Ingridient,
         on_delete=models.CASCADE,
-        related_name='recipes',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='ingridient',
     )
 
     class Meta:
         verbose_name = 'Ингридиент в рецепте'
         verbose_name_plural = 'Ингридиенты в рецепте'
+        constraints = (
+            constraints.UniqueConstraint(
+                name='unique_amount_ingridients_recipe',
+                fields=(
+                    'recipe',
+                    'ingridient',
+                    'amount',
+                ),
+            ),
+        )
 
     def __str__(self):
-        return '%(amount)s %(ingridient)s' % {
+        return '%(amount)s %(ingridient)s in recipe %(recipe)s' % {
             'amount': self.amount,
-            'ingridient': self.ingridient,
+            'ingridient': str(self.ingridient),
+            'recipe': self.recipe.name,
         }
 
 
@@ -221,3 +205,11 @@ class TagInRecipe(models.Model):
         related_name='recipes',
         on_delete=models.CASCADE,
     )
+
+    class Meta:
+        constraints = (
+            constraints.UniqueConstraint(
+                fields=('tag', 'recipe'),
+                name='unique_tag_recipe',
+            ),
+        )
