@@ -3,7 +3,12 @@
 - React js
 - Python3
 - Django 3.2
+## Django extencions:
 - Django REST Framework
+- Django Color Field
+- Djoser
+- Django Filters
+- Django
 # 2. Описание реализации "Бэкенда" приложения
 ## 2.1 Базовые модели проекта
 ### 2.1.1 Recipe (рецепт)
