@@ -84,16 +84,16 @@ class Recipe(models.Model):
     text = models.TextField(
         'Описание рецепта'
     )
-    # tags = models.ManyToManyField(
-    #     Tag,
-    #     help_text='тэги рецепта',
-    #     through='TagInRecipe',
-    # )
-    # ingridients = models.ManyToManyField(
-    #     Ingridient,
-    #     help_text='ингридиенты, необходимые для приготовления блюда',
-    #     through='IngridientInRecipe',
-    # )
+    tags = models.ManyToManyField(
+        Tag,
+        help_text='тэги рецепта',
+        through='TagInRecipe',
+    )
+    ingridients = models.ManyToManyField(
+        Ingridient,
+        help_text='ингридиенты, необходимые для приготовления блюда',
+        through='IngridientInRecipe',
+    )
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления блюда',
         validators=(
@@ -175,7 +175,7 @@ class IngridientInRecipe(models.Model):
     )
     recipe = models.ForeignKey(
         Recipe,
-        related_name='ingridients',
+        related_name='ingridients_in_recipe',
         on_delete=models.CASCADE,
     )
 
@@ -205,7 +205,7 @@ class IngridientInRecipe(models.Model):
 class TagInRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        related_name='tags',
+        related_name='tags_in_recipe',
         on_delete=models.CASCADE,
     )
     tag = models.ForeignKey(

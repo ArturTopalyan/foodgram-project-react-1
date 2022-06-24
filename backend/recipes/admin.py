@@ -55,11 +55,16 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'author',
     )
+    filter_horizontal = (
+        'ingridients',
+        'tags',
+    )
     list_filter = (
         'author',
         'name',
+        'ingridients',
+        'tags',
     )
-    empty_value_display = '-пусто-'
 
 
 @admin.register(models.Favorite)
