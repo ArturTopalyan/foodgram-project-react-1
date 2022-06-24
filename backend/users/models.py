@@ -42,6 +42,10 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+    @property
+    def blocked(self):
+        return not self.is_blocked
+
 
 class Follow(models.Model):
     user = models.ForeignKey(
