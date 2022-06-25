@@ -1,39 +1,11 @@
-from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import constraints
+from tags.models import Tag
 
-from .validators import SlugValidator
 
 User = get_user_model()
-
-
-class Tag(models.Model):
-    name = models.CharField(
-        'Название',
-        max_length=200,
-        unique=True,
-    )
-    color = ColorField(
-        help_text='Цветовой HEX-код (например, #49B64E)',
-        unique=True,
-    )
-    slug = models.SlugField(
-        'slug',
-        unique=True,
-        validators=(
-            SlugValidator,
-        ),
-    )
-
-    class Meta:
-        ordering = ('id',)
-        verbose_name = 'Тег'
-        verbose_name_plural = 'Теги'
-
-    def __str__(self):
-        return self.name
 
 
 class Ingridient(models.Model):
