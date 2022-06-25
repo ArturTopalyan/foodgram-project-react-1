@@ -2,6 +2,7 @@
 
 import colorfield.fields
 from django.db import migrations, models
+
 import tags.validators
 
 
