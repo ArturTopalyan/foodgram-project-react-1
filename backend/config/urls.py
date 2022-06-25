@@ -6,14 +6,23 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
+api_list = (
+    router.urls,
+    'djoser.urls',
+    'tags.urls',
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    path('api/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.authtoken')),
 ]
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+    )
+
+
+for resource in api_list:
+    urlpatterns.append(
+        path('api/', include(resource))
     )
