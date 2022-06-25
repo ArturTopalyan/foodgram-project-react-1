@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from users.models import User
+from .models import User
 
 
 class UserGetSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class UserGetSerializer(serializers.ModelSerializer):
 
     def get_is_subscibed(self, obj: User):
         request = self.context.get('request')
-        if request is None:
+        if request is None or request.user.is_anonymous:
             return False
         return User.objects.filter(
             user=request.user,
@@ -37,3 +37,6 @@ class UserCreationSerializer(serializers.ModelSerializer):
             'last_name',
         )
         model = User
+
+    def validate(self, attrs):
+        return super().validate(attrs)

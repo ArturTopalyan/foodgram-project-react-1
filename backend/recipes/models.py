@@ -28,6 +28,7 @@ class Tag(models.Model):
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -46,6 +47,7 @@ class Ingridient(models.Model):
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
         constraints = (
@@ -132,6 +134,7 @@ class Favorite(models.Model):
     )
 
     class Meta:
+        ordering = ('user',)
         verbose_name = 'Любимый рецепт'
         verbose_name_plural = 'Любимые рецепты'
         constraints = (
@@ -153,6 +156,7 @@ class Cart(models.Model):
     )
 
     class Meta:
+        ordering = ('id',)
         default_related_name = 'carts'
         verbose_name = 'рецепт в корзине'
         verbose_name_plural = 'рецепт в корзине'
@@ -180,6 +184,7 @@ class IngridientInRecipe(models.Model):
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'Ингридиент в рецепте'
         verbose_name_plural = 'Ингридиенты в рецепте'
         constraints = (
@@ -215,6 +220,7 @@ class TagInRecipe(models.Model):
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'тэг рецепта'
         verbose_name_plural = 'тэги рецепта'
         constraints = (

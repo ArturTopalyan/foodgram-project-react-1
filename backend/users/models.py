@@ -12,6 +12,7 @@ class User(AbstractUser):
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
+        db_index=True,
     )
     is_blocked = models.BooleanField(
         default=False,
@@ -32,13 +33,15 @@ class User(AbstractUser):
 
     objects = CustomUserManager()
 
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = (
-        'email',
+        'username',
         'first_name',
         'last_name',
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
@@ -60,6 +63,7 @@ class Follow(models.Model):
     )
 
     class Meta:
+        ordering = ('id',)
         constraints = (
             constraints.UniqueConstraint(
                 fields=('user', 'author'),

@@ -1,4 +1,4 @@
-from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework.permissions import BasePermission
 
 
 class AdminOnlyPermission(BasePermission):
@@ -9,13 +9,10 @@ class AdminOnlyPermission(BasePermission):
         return request.user.is_superuser
 
 
-class RecipePermission(BasePermission):
-    def has_permission(self, request, view):
-        user = request.user
-        base_user_perm = not user.blocked or request.method in SAFE_METHODS
-        return base_user_perm or user.is_superuser
-
+class CurrentUserOrAdmin(BasePermission):
     def has_object_permission(self, request, view, obj):
-        user = request.user
-        base_user_perm = not user.blocked or request.method in SAFE_METHODS
-        return user.is_superuser or obj.author is user or base_user_perm
+        return (
+            request.user.is_authenticated and (
+                request.user == obj or request.user.is_superuser
+            )
+        )
