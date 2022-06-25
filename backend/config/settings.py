@@ -1,14 +1,22 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+DEBUG = True
+
+if DEBUG:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -26,11 +34,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'colorfield',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'djoser',
     'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
-    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -108,15 +116,16 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join('media')
 
-if DEBUG:
-    STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
 }
 
 DJOSER = {
