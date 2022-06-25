@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 
@@ -12,7 +11,6 @@ if DEBUG:
     STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 
 
 SECRET_KEY = os.getenv('SECRET_KEY')
