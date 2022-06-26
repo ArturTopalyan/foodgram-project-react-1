@@ -10,17 +10,14 @@ if DEBUG:
     load_dotenv()
     STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'django_static')
 
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    'marlo.sytes.net',
-    '*',
+    '*'
 ]
 
 INSTALLED_APPS = [
@@ -35,12 +32,14 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
+    'corsheaders',
     'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
     'tags.apps.TagsConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -100,6 +99,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r''
 
 LANGUAGE_CODE = 'ru-RU'
 
@@ -111,9 +112,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join('media')
+STATIC_URL = '/django_static/'
+MEDIA_URL = '/django_media/'
+MEDIA_ROOT = os.path.join('django_media')
 
 
 REST_FRAMEWORK = {

@@ -1,32 +1,45 @@
 version: '3.8'
 services:
+  db:
+    image: postgres:14.3-alpine
+    volumes:
+      - db_value:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    ports:
+      - "5432:5432"
   frontend:
     build:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
-  # backend:
-  #   build: ../backend
-  #   restart: always
-  #   volumes:
-  #     - static_value:/app/static/
-  #     - media_value:/app/media/
-  #   env_file:
-  #     - ./.env
+  backend:
+    build: ../backend
+    restart: always
+    volumes:
+      - static_value:/backend/django_static/
+      - media_value:/backend/django_media/
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
   nginx:
-    image: nginx:1.19.3
+    image: nginx:1.19.3-alpine
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
+      - static_value:/backend/django_static/
+      - media_value:/backend/django_media/
     restart:
       always
     depends_on:
       - frontend
+      - backend
 volumes:
   static_value:
   media_value:
-  # db_value:
+  db_value:

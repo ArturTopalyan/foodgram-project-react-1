@@ -8,7 +8,7 @@ from tags.models import Tag
 User = get_user_model()
 
 
-class Ingridient(models.Model):
+class Ingredient(models.Model):
     name = models.CharField(
         'Название',
         max_length=255,
@@ -44,7 +44,6 @@ class Recipe(models.Model):
         User,
         help_text='Автор рецепта',
         on_delete=models.CASCADE,
-        related_name='recipes',
     )
     name = models.CharField(
         'Название рецепта',
@@ -63,10 +62,11 @@ class Recipe(models.Model):
         help_text='тэги рецепта',
         through='TagInRecipe',
     )
-    ingridients = models.ManyToManyField(
-        Ingridient,
+    ingredients = models.ManyToManyField(
+        Ingredient,
         help_text='ингридиенты, необходимые для приготовления блюда',
         through='IngridientInRecipe',
+        related_name='ingridients',
     )
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления блюда',
@@ -85,6 +85,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
+        default_related_name='recipes'
         ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
@@ -145,18 +146,17 @@ class IngridientInRecipe(models.Model):
         'Количество ингридиента в рецепте',
     )
     ingridient = models.ForeignKey(
-        Ingridient,
-        related_name='recipes',
+        Ingredient,
         on_delete=models.CASCADE,
     )
     recipe = models.ForeignKey(
         Recipe,
-        related_name='ingridients_in_recipe',
         on_delete=models.CASCADE,
     )
 
     class Meta:
         ordering = ('id',)
+        default_related_name='ingridients_in_recipe'
         verbose_name = 'Ингридиент в рецепте'
         verbose_name_plural = 'Ингридиенты в рецепте'
         constraints = (
@@ -187,7 +187,6 @@ class TagInRecipe(models.Model):
     )
     tag = models.ForeignKey(
         Tag,
-        related_name='recipes',
         on_delete=models.CASCADE,
     )
 

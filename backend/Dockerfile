@@ -1,5 +1,5 @@
 FROM python:3.7-slim
-WORKDIR ../app
+WORKDIR ../back
 COPY . .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt --no-cache-dir
