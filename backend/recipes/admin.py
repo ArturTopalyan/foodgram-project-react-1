@@ -8,7 +8,6 @@ class IngredientInLine(admin.TabularInline):
     extra = 1
 
 
-
 class TagInLine(admin.TabularInline):
     model = models.TagInRecipe
     extra = 1

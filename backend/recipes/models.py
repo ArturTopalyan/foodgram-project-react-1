@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import constraints
-
 from tags.models import Tag
 
 User = get_user_model()
@@ -85,7 +84,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
-        default_related_name='recipes'
+        default_related_name = 'recipes'
         ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
@@ -156,7 +155,7 @@ class IngridientInRecipe(models.Model):
 
     class Meta:
         ordering = ('id',)
-        default_related_name='ingridients_in_recipe'
+        default_related_name = 'ingridients_in_recipe'
         verbose_name = 'Ингридиент в рецепте'
         verbose_name_plural = 'Ингридиенты в рецепте'
         constraints = (
