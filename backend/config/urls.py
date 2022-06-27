@@ -6,6 +6,7 @@ from django.urls import include, path
 api_list = (
     'users.urls',
     'tags.urls',
+    'recipes.urls',
     'djoser.urls',
 )
 
