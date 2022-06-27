@@ -163,7 +163,7 @@ class IngridientInRecipe(models.Model):
                 name='unique_amount_ingridients_recipe',
                 fields=(
                     'recipe',
-                    'ingridient',
+                    'ingredient',
                     'amount',
                 ),
             ),
@@ -172,8 +172,8 @@ class IngridientInRecipe(models.Model):
     def __str__(self):
         return '%(amount)s %(mu)s %(ingridient)s в рецепте %(recipe)s' % {
             'amount': self.amount,
-            'mu': self.ingridient.measurement_unit,
-            'ingridient': self.ingridient.name,
+            'mu': self.ingredient.measurement_unit,
+            'ingridient': self.ingredient.name,
             'recipe': self.recipe.name,
         }
 

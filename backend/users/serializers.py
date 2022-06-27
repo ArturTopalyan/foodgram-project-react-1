@@ -21,6 +21,6 @@ class UserGetSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj: User):
         return get_sub_exist(
             request=self.context.get('request'),
-            sub='users.Follow',
+            related_class='users.Follow',
             author__id=obj.id,
         )

@@ -45,13 +45,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_in_shopping_cart(self, obj):
         return get_sub_exist(
             request=self.context.get('request'),
-            sub='recipes.Cart',
+            related_class='recipes.Cart',
             recipe=obj,
         )
 
     def get_is_favorited(self, obj):
         return get_sub_exist(
             request=self.context.get('request'),
-            sub='recipes.Favorite',
+            related_class='recipes.Favorite',
             recipe=obj,
         )
