@@ -13,7 +13,10 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'django_static/')
 
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'django-insecure-_o#$ui!%cjrzcc111m4_lkq0f&791nlv8+bdh_a&l#l&6k5^8o'
+)
 
 
 ALLOWED_HOSTS = [
