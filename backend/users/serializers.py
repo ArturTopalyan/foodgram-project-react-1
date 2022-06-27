@@ -1,6 +1,7 @@
+from recipes.utils import get_sub_exist
 from rest_framework import serializers
 
-from .models import Follow, User
+from .models import User
 
 
 class UserGetSerializer(serializers.ModelSerializer):
@@ -18,10 +19,8 @@ class UserGetSerializer(serializers.ModelSerializer):
         model = User
 
     def get_is_subscribed(self, obj: User):
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
-            return False
-        return Follow.objects.filter(
-            user=request.user,
+        return get_sub_exist(
+            request=self.context.get('request'),
+            sub='users.Follow',
             author__id=obj.id,
-        ).exists()
+        )
