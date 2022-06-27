@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DEBUG = False
+DEBUG = bool(os.getenv('DEBUG', True))
 
 if DEBUG:
     from dotenv import load_dotenv
@@ -17,7 +17,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 ALLOWED_HOSTS = [
-    '*'
+    'localhost',
+    '127.0.0.1',
+    'backend',
 ]
 
 INSTALLED_APPS = [
@@ -32,14 +34,12 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
-    # 'corsheaders',
     'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
     'tags.apps.TagsConfig',
 ]
 
 MIDDLEWARE = [
-    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -99,8 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# CORS_ORIGIN_ALLOW_ALL = True
-# CORS_URLS_REGEX = r'*'
 
 LANGUAGE_CODE = 'ru-RU'
 
