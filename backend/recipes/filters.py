@@ -1,5 +1,4 @@
-from django_filters import FilterSet
-from django_filters import CharFilter
+from django_filters import CharFilter, FilterSet
 
 from .models import Ingredient
 

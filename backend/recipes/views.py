@@ -1,8 +1,7 @@
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .filters import IngredientFilter
-
 from .models import Ingredient, Recipe
 from .serializers import IngredientSerializer, RecipeGetSerializer
 
