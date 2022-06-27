@@ -5,12 +5,12 @@ from . import models
 
 class IngredientInLine(admin.TabularInline):
     model = models.IngridientInRecipe
-    extra = 1
+    extra = 0
 
 
 class TagInLine(admin.TabularInline):
     model = models.TagInRecipe
-    extra = 1
+    extra = 0
 
 
 @admin.register(models.Ingredient)
