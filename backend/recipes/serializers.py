@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from tags.serializers import TagSerializer
 from users.serializers import UserGetSerializer
+from drf_extra_fields.fields import Base64ImageField
 
 from .models import Ingredient, IngridientInRecipe, Recipe
 from .utils import get_sub_exist
@@ -32,6 +33,19 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
         )
 
 
+class IngredientRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(
+        source='ingredient',
+    )
+
+    class Meta:
+        model = IngridientInRecipe
+        fields = (
+            'id',
+            'amount',
+        )
+
+
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
@@ -49,6 +63,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         read_only=True,
         many=True,
     )
+    image = Base64ImageField()
     ingredients = serializers.SerializerMethodField()
 
     class Meta:
@@ -84,4 +99,22 @@ class RecipeGetSerializer(serializers.ModelSerializer):
             request=self.context.get('request'),
             related_class='recipes.Favorite',
             recipe=obj,
+        )
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    ingredients = IngredientRecipeSerializer(
+        many=True,
+        read_only=True,
+    )
+    image = Base64ImageField()
+    class Meta:
+        model = Recipe
+        fields = (
+            'ingredients',
+            'tags',
+            'image',
+            'name',
+            'text',
+            'cooking_time',
         )
