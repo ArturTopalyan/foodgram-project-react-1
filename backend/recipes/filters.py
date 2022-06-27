@@ -1,24 +1,19 @@
-from django_filters import (
-    CharFilter,
-    FilterSet,
-    MultipleChoiceFilter,
-    BooleanFilter,
-)
+import django_filters
 from tags.models import Tag
 
 from .models import Ingredient, Recipe
 
 
-class RecipeFilter(FilterSet):
-    tags = MultipleChoiceFilter(
+class RecipeFilter(django_filters.FilterSet):
+    tags = django_filters.MultipleChoiceFilter(
         queryset=Tag.objects.all(),
         field_name='tags__slug',
         to_field_name='slug',
     )
-    is_favorited = BooleanFilter(
+    is_favorited = django_filters.BooleanFilter(
         method='get_favorited',
     )
-    is_in_shopping_cart = BooleanFilter(
+    is_in_shopping_cart = django_filters.BooleanFilter(
         method='get_in_shopping_cart',
     )
 
@@ -35,15 +30,15 @@ class RecipeFilter(FilterSet):
         if value:
             return queryset.filter(followers__user=self.request.user)
         return Recipe.objects.all()
-    
+
     def get_in_shopping_cart(self, queryset, name, value):
         if value:
             return queryset.filter(carts__user=self.request.user)
         return Recipe.objects.all()
 
 
-class IngredientFilter(FilterSet):
-    name = CharFilter(
+class IngredientFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(
         filter_name='name',
         lookup_expr='icontains',
     )

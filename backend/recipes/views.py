@@ -3,8 +3,8 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .filters import IngredientFilter, RecipeFilter
 from .models import Ingredient, Recipe
-from .serializers import IngredientSerializer, RecipeGetSerializer
 from .permissions import AuthorOrReadOnly
+from .serializers import IngredientSerializer, RecipeGetSerializer
 
 
 class IngredientsViewSet(ReadOnlyModelViewSet):
