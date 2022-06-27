@@ -9,7 +9,7 @@ services:
     user: postgres
     container_name: foodgram_db_psql
   backend:
-    build: ../backend
+    image: marlooooo/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/backend/django_static/
@@ -21,9 +21,7 @@ services:
     depends_on:
       - db
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: marlooooo/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
