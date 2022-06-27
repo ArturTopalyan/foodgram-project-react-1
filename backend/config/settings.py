@@ -32,14 +32,14 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
-    'corsheaders',
+    # 'corsheaders',
     'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
     'tags.apps.TagsConfig',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -99,8 +99,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r'*'
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_URLS_REGEX = r'*'
 
 LANGUAGE_CODE = 'ru-RU'
 
