@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DEBUG = bool(os.getenv('DEBUG', True))
+DEBUG = os.getenv('DEBUG', True) != 'False'
 
 if DEBUG:
     from dotenv import load_dotenv
@@ -10,7 +10,7 @@ if DEBUG:
     load_dotenv()
     STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'django_static')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'django_static/')
 
 
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -112,7 +112,7 @@ USE_TZ = True
 
 STATIC_URL = '/django_static/'
 MEDIA_URL = '/django_media/'
-MEDIA_ROOT = os.path.join('django_media')
+MEDIA_ROOT = os.path.join('django_media/')
 
 
 REST_FRAMEWORK = {
