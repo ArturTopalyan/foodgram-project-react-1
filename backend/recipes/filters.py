@@ -11,7 +11,7 @@ class RecipeFilter(django_filters.FilterSet):
         to_field_name='slug',
     )
     is_favorited = django_filters.BooleanFilter(
-        method='get_favorited',
+        method='get_is_favorited',
     )
     is_in_shopping_cart = django_filters.BooleanFilter(
         method='get_in_shopping_cart',
@@ -26,12 +26,12 @@ class RecipeFilter(django_filters.FilterSet):
             'is_in_shopping_cart',
         )
 
-    def get_favorited(self, queryset, name, value):
+    def get_is_favorited(self, queryset, name, value):
         if value:
             return queryset.filter(followers__user=self.request.user)
         return Recipe.objects.all()
 
-    def get_in_shopping_cart(self, queryset, name, value):
+    def get_is_in_shopping_cart(self, queryset, name, value):
         if value:
             return queryset.filter(carts__user=self.request.user)
         return Recipe.objects.all()
