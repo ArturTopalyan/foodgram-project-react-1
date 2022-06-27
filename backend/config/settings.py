@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'backend',
+    'marlo.sytes.net',
 ]
 
 INSTALLED_APPS = [
