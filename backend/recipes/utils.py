@@ -4,12 +4,12 @@ from django.apps import apps
 def get_sub_exist(
     request,
     related_class: str,
-    user_field: None | str=None,
+    user_field: None | str = None,
     **kwargs
 ) -> bool:
     """
     :param request: объект класса request
-    :param related_class str: связанный класс по шаблону 
+    :param related_class str: связанный класс по шаблону
     <app_lable>.<model_name>
     :param user_field:
     Данная функция поможет определить, существует ли объект класса
@@ -27,9 +27,7 @@ def get_sub_exist(
     model = apps.get_model(app_label=app_lable, model_name=model_name)
     if request is None or request.user.is_anonymous:
         return False
-    if user_field is None:
-        user_field = 'user'
-    kwargs[user_field] = request.user
+    kwargs[user_field or 'user'] = request.user
     return model.objects.filter(
         **kwargs,
     ).exists()
