@@ -8,10 +8,12 @@ router = DefaultRouter()
 router.register(
     r'^ingredients',
     IngredientsViewSet,
+    'ingredients',
 )
 router.register(
     r'^recipes',
     RecipeViewSet,
+    'recipes_view_set',
 )
 
 urlpatterns = [

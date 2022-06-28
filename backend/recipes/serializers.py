@@ -3,6 +3,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from tags.models import Tag
 from tags.serializers import TagSerializer
+from users.models import User
 from users.serializers import UserGetSerializer
 
 from .models import Ingredient, IngridientInRecipe, Recipe
@@ -197,3 +198,32 @@ class RecipeShortInfo(serializers.ModelSerializer):
 
     def get_image(self, obj):
         return self.context.get('request').build_absolute_uri(obj.image.url)
+
+
+class UserInSubscriptionsSerializer(serializers.ModelSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
+        model = User
+        read_only_fields = '__all__'
+
+    def get_recipes(self, obj):
+        limit = self.context.get('kwargs').get('recipes_limit')
+        return RecipeShortInfo(
+            obj.recipes.all()[:limit],
+            many=True
+        )
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()

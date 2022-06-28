@@ -7,6 +7,7 @@ router = DefaultRouter()
 router.register(
     r'^users/subscriptions/',
     GetSubscriptions,
+    'user_subsctiptions'
 )
 
 

@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from recipes.serializers import UserInSubscriptionsSerializer
 from rest_framework import status
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
@@ -7,7 +8,6 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from .models import Follow, User
-from .serializers import UserInSubscriptionsSerializer
 
 
 class GetSubscriptions(GenericViewSet, ListModelMixin):

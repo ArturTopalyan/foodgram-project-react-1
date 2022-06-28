@@ -41,18 +41,26 @@ class RecipeViewSet(ModelViewSet):
     def shopping_cart(self, request, id=None):
         if id is None or not Recipe.objects.filter(id=id).exists():
             return Response(
-                {'error': 'sdfsdf'},
+                {'error': 'recipe object with id %s doesn\'t exists' % id},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         recipe = Recipe.objects.get(id=id)
-        Cart.objects.create(
-            user=request.user,
-            recipe=recipe,
+        kwargs = {
+            'user': request.user,
+            'recipe': recipe,
+        }
+        if request.method == 'post':
+            Cart.objects.create(
+                **kwargs,
+            )
+            return Response(
+                RecipeShortInfo(recipe, many=False),
+                status=status.HTTP_201_CREATED,
+            )
+        Cart.objects.delete(
+            **kwargs,
         )
-        return Response(
-            RecipeShortInfo(recipe, many=False),
-            status=status.HTTP_201_CREATED,
-        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         path='download_shopping_cart',
