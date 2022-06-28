@@ -131,7 +131,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def create_ingredients(self, recipe, ingredients):
         for ingredient in ingredients:
-            IngridientInRecipe.objects.create(
+            yield IngridientInRecipe.objects.create(
                 recipe=recipe,
                 amount=ingredient['amount'],
                 ingredient=ingredient['ingredient'],
@@ -148,18 +148,16 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         recipe.save()
         recipe.tags.set(tags)
-        self.create_ingredients(recipe, ingredients)
+        recipe.ingredients.set(*self.create_ingredients(recipe, ingredients))
         return recipe
 
     @atomic
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
+        recipe = instance
         IngridientInRecipe.objects.filter(recipe=instance).delete()
-        self.create_ingredients(
-            instance,
-            ingredients,
-        )
-        return super().update(instance, validated_data)
+        recipe.ingredients.set(*self.create_ingredients(recipe, ingredients))
+        return super().update(recipe, validated_data)
 
     def validate_ingredients(self, data):
         for ingredient in self.initial_data.get('ingredients'):
@@ -186,8 +184,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeShortInfo(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-
     class Meta:
         model = Recipe
         fields = (
@@ -196,9 +192,6 @@ class RecipeShortInfo(serializers.ModelSerializer):
             'image',
             'cooking_time',
         )
-
-    def get_image(self, obj):
-        return self.context.get('request').build_absolute_uri(obj.image.url)
 
 
 class UserInSubscriptionsSerializer(serializers.ModelSerializer):

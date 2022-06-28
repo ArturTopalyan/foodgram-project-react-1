@@ -11,12 +11,12 @@ from .models import Follow, User
 class FollowUnfollowUser(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, user_id):
+    def post(self, request, id):
         Follow.objects.create(
             user=request.user,
-            author=user_id,
+            author__id=id,
         )
-        user, _ = get_object_or_404(User, id=user_id)
+        user, _ = get_object_or_404(User, id=id)
         serializer = UserInSubscriptionsSerializer(
             user,
             many=False,
@@ -31,14 +31,14 @@ class FollowUnfollowUser(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    def delete(self, request, user_id):
+    def delete(self, request, id):
         if Follow.objects.filter(
             user=request.user,
-            author=user_id,
+            author__id=id,
         ).exists():
             Follow.objects.delete(
                 user=request.user,
-                author=user_id,
+                author=id,
             )
             return Response(
                 {'success': 'success'},
