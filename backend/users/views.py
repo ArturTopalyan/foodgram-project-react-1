@@ -12,9 +12,9 @@ class FollowUnfollowUser(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, id):
-        Follow.objects.create(
+        Follow.objects.get_or_create(
             user=request.user,
-            author__id=id,
+            author=id,
         )
         user, _ = get_object_or_404(User, id=id)
         serializer = UserInSubscriptionsSerializer(
@@ -23,7 +23,7 @@ class FollowUnfollowUser(APIView):
         )
         if serializer.is_valid(raise_exception=True):
             return Response(
-                serializer,
+                serializer.data,
                 status=status.HTTP_201_CREATED,
             )
         return Response(
@@ -34,7 +34,7 @@ class FollowUnfollowUser(APIView):
     def delete(self, request, id):
         if Follow.objects.filter(
             user=request.user,
-            author__id=id,
+            author=id,
         ).exists():
             Follow.objects.delete(
                 user=request.user,
