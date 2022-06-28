@@ -1,19 +1,17 @@
 from django.http.response import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
+from recipes.utils import sub_action
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.viewsets import (GenericViewSet, ModelViewSet,
                                      ReadOnlyModelViewSet)
 
 from .filters import IngredientFilter, RecipeFilter
-from .models import Cart, Ingredient, Recipe
+from .models import Ingredient, Recipe
 from .permissions import AuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
-                          RecipeGetSerializer, RecipeShortInfo,
-                          UserInSubscriptionsSerializer)
+                          RecipeGetSerializer, UserInSubscriptionsSerializer)
 
 
 class IngredientsViewSet(ReadOnlyModelViewSet):
@@ -29,6 +27,7 @@ class RecipeViewSet(ModelViewSet):
     permission_classes = (AuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filter_class = RecipeFilter
+    lookup_field = 'id'
 
     def get_serializer_class(self):
         if self.request.method not in SAFE_METHODS:
@@ -42,28 +41,16 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, id=None):
-        if id is None or not Recipe.objects.filter(id=id).exists():
-            return Response(
-                {'error': 'recipe object with id %s doesn\'t exists' % id},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        recipe = Recipe.objects.get(id=id)
-        kwargs = {
-            'user': request.user,
-            'recipe': recipe,
-        }
-        if request.method == 'post':
-            Cart.objects.create(
-                **kwargs,
-            )
-            return Response(
-                RecipeShortInfo(recipe, many=False),
-                status=status.HTTP_201_CREATED,
-            )
-        Cart.objects.delete(
-            **kwargs,
-        )
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return sub_action(request, 'recipes.Cart', id)
+
+    @action(
+        url_path='favorite',
+        detail=True,
+        methods=('post', 'delete'),
+        permission_classes=(IsAuthenticated,),
+    )
+    def favorite_recipe(self, request, id=None):
+        return sub_action(request, 'recipes.Favorite', id)
 
     @action(
         url_path='download_shopping_cart',
@@ -72,19 +59,21 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        recipes = request.user.recipes.all()
+        carts = request.user.carts.all()
         shopping_list = {}
-        for ingredient in recipes.ingredients.all():
-            name = ingredient.ingredient.name
-            amount = ingredient.amount
-            measurement_unit = ingredient.measurement_unit
-            if name in shopping_list:
-                shopping_list[name]['amount'] += amount
-            else:
-                shopping_list[name] = {
-                    'amount': amount,
-                    'measurement_unit': measurement_unit,
-                }
+        for cart in carts:
+            recipe = cart.recipe
+            for ingredient_recipe in recipe.ingridients_in_recipe.all():
+                name = ingredient_recipe.ingredient.name
+                amount = ingredient_recipe.amount
+                meas_unit = ingredient_recipe.ingredient.measurement_unit
+                if name in shopping_list:
+                    shopping_list[name]['amount'] += amount
+                else:
+                    shopping_list[name] = {
+                        'amount': amount,
+                        'measurement_unit': meas_unit,
+                    }
         cart = [
             '%(name)s %(amount)s %(measurement_unit)s\n' % {
                 'name': name,

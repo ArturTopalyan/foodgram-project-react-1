@@ -125,6 +125,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'image',
             'name',
             'text',
+            'author',
             'cooking_time',
         )
 
