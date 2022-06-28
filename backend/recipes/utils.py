@@ -1,9 +1,4 @@
 from django.apps import apps
-from rest_framework import status
-from rest_framework.response import Response
-
-from .models import Recipe
-from .serializers import RecipeShortInfo
 
 
 def get_sub_exist(
@@ -36,29 +31,3 @@ def get_sub_exist(
     return model.objects.filter(
         **kwargs,
     ).exists()
-
-
-def sub_action(request, model_name, id):
-    model = apps.get_model(model_name)
-    if id is None or not Recipe.objects.filter(id=id).exists():
-        return Response(
-            {'error': 'recipe object with id %s doesn\'t exists' % id},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-    recipe = Recipe.objects.get(id=id)
-    kwargs = {
-        'user': request.user,
-        'recipe': recipe,
-    }
-    if request.method.lower() == 'delete':
-        model.objects.get(
-            **kwargs,
-        ).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    model.objects.get_or_create(
-        **kwargs,
-    )
-    return Response(
-        RecipeShortInfo(recipe, many=False).data,
-        status=status.HTTP_201_CREATED,
-    )

@@ -1,9 +1,11 @@
+from django.apps import apps
 from django.http.response import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.utils import sub_action
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import (GenericViewSet, ModelViewSet,
                                      ReadOnlyModelViewSet)
 
@@ -11,7 +13,34 @@ from .filters import IngredientFilter, RecipeFilter
 from .models import Ingredient, Recipe
 from .permissions import AuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
-                          RecipeGetSerializer, UserInSubscriptionsSerializer)
+                          RecipeGetSerializer, RecipeShortInfo,
+                          UserInSubscriptionsSerializer)
+
+
+def sub_action(request, model_name, id):
+    model = apps.get_model(model_name)
+    if id is None or not Recipe.objects.filter(id=id).exists():
+        return Response(
+            {'error': 'recipe object with id %s doesn\'t exists' % id},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    recipe = Recipe.objects.get(id=id)
+    kwargs = {
+        'user': request.user,
+        'recipe': recipe,
+    }
+    if request.method.lower() == 'delete':
+        model.objects.get(
+            **kwargs,
+        ).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    model.objects.get_or_create(
+        **kwargs,
+    )
+    return Response(
+        RecipeShortInfo(recipe, many=False).data,
+        status=status.HTTP_201_CREATED,
+    )
 
 
 class IngredientsViewSet(ReadOnlyModelViewSet):
