@@ -1,11 +1,10 @@
-from django.core.handlers.exception import response_for_exception
 from django.http.response import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from rest_framework.decorators import action
 
 from .filters import IngredientFilter, RecipeFilter
 from .models import Cart, Ingredient, Recipe
@@ -90,4 +89,3 @@ class RecipeViewSet(ModelViewSet):
             'attachment; filename="shopping_cart.txt"'
         )
         return response
-
