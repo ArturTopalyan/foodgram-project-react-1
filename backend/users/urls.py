@@ -1,14 +1,9 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import FollowUnfollowUser, GetSubscriptions
+from .views import FollowUnfollowUser
 
 router = DefaultRouter()
-router.register(
-    r'^users/subscriptions/',
-    GetSubscriptions,
-    'user_subsctiptions'
-)
 
 
 urlpatterns = [

@@ -2,15 +2,18 @@ from django.http.response import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import (GenericViewSet, ModelViewSet,
+                                     ReadOnlyModelViewSet)
 
 from .filters import IngredientFilter, RecipeFilter
 from .models import Cart, Ingredient, Recipe
 from .permissions import AuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
-                          RecipeGetSerializer, RecipeShortInfo)
+                          RecipeGetSerializer, RecipeShortInfo,
+                          UserInSubscriptionsSerializer)
 
 
 class IngredientsViewSet(ReadOnlyModelViewSet):
@@ -33,7 +36,7 @@ class RecipeViewSet(ModelViewSet):
         return RecipeGetSerializer
 
     @action(
-        path='shopping_cart',
+        url_path='shopping_cart',
         detail=True,
         methods=('post', 'delete'),
         permission_classes=(IsAuthenticated,),
@@ -63,7 +66,7 @@ class RecipeViewSet(ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        path='download_shopping_cart',
+        url_path='download_shopping_cart',
         detail=False,
         methods=('get',),
         permission_classes=(IsAuthenticated,),
@@ -97,3 +100,11 @@ class RecipeViewSet(ModelViewSet):
             'attachment; filename="shopping_cart.txt"'
         )
         return response
+
+
+class GetSubscriptions(GenericViewSet, ListModelMixin):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserInSubscriptionsSerializer
+
+    def get_queryset(self):
+        return self.request.user.following.all()
