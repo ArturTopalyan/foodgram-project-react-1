@@ -197,6 +197,7 @@ class RecipeShortInfo(serializers.ModelSerializer):
 class UserInSubscriptionsSerializer(serializers.ModelSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
@@ -210,14 +211,30 @@ class UserInSubscriptionsSerializer(serializers.ModelSerializer):
             'recipes_count',
         )
         model = User
-        read_only_fields = '__all__'
+        read_only_fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
 
     def get_recipes(self, obj):
-        limit = self.context.get('kwargs').get('recipes_limit')
+        print(self.get_extra_kwargs())
         return RecipeShortInfo(
-            obj.recipes.all()[:limit],
+            obj.recipes.all()[:6],
             many=True
-        )
+        ).data
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()
+
+    def get_is_subscribed(self, obj):
+        return get_sub_exist(
+            request=self.context.get('request'),
+            related_class='users.Follow',
+            author__id=obj.id,
+        )

@@ -12,23 +12,18 @@ class FollowUnfollowUser(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, id):
+        user = get_object_or_404(User, id=id)
         Follow.objects.get_or_create(
             user=request.user,
-            author=id,
+            author=user,
         )
-        user, _ = get_object_or_404(User, id=id)
         serializer = UserInSubscriptionsSerializer(
             user,
             many=False,
         )
-        if serializer.is_valid(raise_exception=True):
-            return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED,
-            )
         return Response(
-            {'error': 'somethink went wrong'},
-            status=status.HTTP_400_BAD_REQUEST,
+            serializer.data,
+            status=status.HTTP_201_CREATED,
         )
 
     def delete(self, request, id):
