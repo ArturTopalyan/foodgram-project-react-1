@@ -125,4 +125,9 @@ class GetSubscriptionsViewSet(ListModelMixin, GenericViewSet):
     serializer_class = UserInSubscriptionsSerializer
 
     def get_queryset(self):
-        return self.request.user.following.all()
+        return list(
+            map(
+                lambda follow: follow.author,
+                self.request.user.following.all()
+            )
+        )
