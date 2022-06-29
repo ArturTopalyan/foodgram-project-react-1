@@ -56,8 +56,12 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeGetSerializer(serializers.ModelSerializer):
-    is_in_shopping_cart = serializers.SerializerMethodField()
-    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField(
+        read_only=True
+    )
+    is_favorited = serializers.SerializerMethodField(
+        read_only=True
+    )
     author = UserGetSerializer(
         read_only=True,
         many=False,
@@ -66,7 +70,9 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         read_only=True,
         many=True,
     )
-    ingredients = serializers.SerializerMethodField()
+    ingredients = serializers.SerializerMethodField(
+        read_only=True,
+    )
 
     class Meta:
         model = Recipe
@@ -131,7 +137,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def create_ingredients(self, recipe, ingredients):
         for ingredient in ingredients:
-            yield IngridientInRecipe.objects.create(
+            IngridientInRecipe.objects.create(
                 recipe=recipe,
                 amount=ingredient['amount'],
                 ingredient=ingredient['ingredient'],
@@ -148,7 +154,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         recipe.save()
         recipe.tags.set(tags)
-        recipe.ingredients.set(*self.create_ingredients(recipe, ingredients))
+        self.create_ingredients(recipe, ingredients)
         return recipe
 
     @atomic
@@ -156,7 +162,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = instance
         IngridientInRecipe.objects.filter(recipe=instance).delete()
-        recipe.ingredients.set(*self.create_ingredients(recipe, ingredients))
+        self.create_ingredients(recipe, ingredients)
         return super().update(recipe, validated_data)
 
     def validate_ingredients(self, data):
@@ -175,6 +181,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
+        instance = Recipe.objects.get(id=instance.id)
         return RecipeGetSerializer(
             instance,
             context={
