@@ -39,7 +39,7 @@ class RecipeFilter(django_filters.FilterSet):
 
 class IngredientFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(
-        filter_name='name',
+        field_name='name',
         lookup_expr='icontains',
     )
 
