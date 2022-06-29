@@ -28,7 +28,7 @@ class RecipeFilter(django_filters.FilterSet):
 
     def get_is_favorited(self, queryset, name, value):
         if value:
-            return queryset.filter(followers__user=self.request.user)
+            return queryset.filter(favorite__user=self.request.user)
         return Recipe.objects.all()
 
     def get_is_in_shopping_cart(self, queryset, name, value):
