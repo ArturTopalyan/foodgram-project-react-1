@@ -120,7 +120,7 @@ class RecipeViewSet(ModelViewSet):
         return response
 
 
-class GetSubscriptions(GenericViewSet, ListModelMixin):
+class GetSubscriptionsViewSet(ListModelMixin, GenericViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserInSubscriptionsSerializer
 

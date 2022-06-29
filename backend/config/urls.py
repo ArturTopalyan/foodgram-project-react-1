@@ -12,7 +12,6 @@ api_list = (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/auth/', include('djoser.urls.authtoken')),
 ]
 if settings.DEBUG:
     urlpatterns += static(
@@ -24,3 +23,6 @@ for resource in api_list:
     urlpatterns.append(
         path('api/', include(resource))
     )
+urlpatterns.append(
+    path('api/auth/', include('djoser.urls.authtoken'))
+)
