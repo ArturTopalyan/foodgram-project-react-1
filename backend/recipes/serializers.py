@@ -111,27 +111,25 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    ingredients = IngredientRecipeSerializer(
-        many=True,
-    )
     image = Base64ImageField(use_url=True, max_length=None)
-    author = UserGetSerializer(
-        read_only=True,
-    )
+    author = UserGetSerializer(read_only=True)
+    ingredients = IngredientRecipeSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True,
     )
+    cooking_time = serializers.IntegerField()
 
     class Meta:
         model = Recipe
         fields = (
-            'ingredients',
-            'tags',
+            'id',
             'image',
+            'tags',
+            'author',
+            'ingredients',
             'name',
             'text',
-            'author',
             'cooking_time',
         )
 

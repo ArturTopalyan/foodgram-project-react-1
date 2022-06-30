@@ -59,14 +59,9 @@ class RecipeViewSet(ModelViewSet):
     lookup_field = 'id'
 
     def get_serializer_class(self):
-        if self.request.method not in SAFE_METHODS:
-            return RecipeCreateSerializer
-        return RecipeGetSerializer
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context.update({'request': self.request})
-        return context
+        if self.request.method in SAFE_METHODS:
+            return RecipeGetSerializer
+        return RecipeCreateSerializer
 
     @action(
         url_path='shopping_cart',
