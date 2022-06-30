@@ -39,7 +39,9 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 class IngredientRecipeSerializer(serializers.ModelSerializer):
     id = serializers.CharField(
         source='ingredient',
+        queryset=Ingredient.objects.all()
     )
+    amount = serializers.IntegerField()
 
     class Meta:
         model = IngridientInRecipe
