@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework.viewsets import (GenericViewSet, ModelViewSet,
                                      ReadOnlyModelViewSet)
 
@@ -17,7 +18,20 @@ from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           UserInSubscriptionsSerializer)
 
 
-def sub_action(request, model_name, id):
+def sub_action(request: Request, model_name: str, id: int):
+    """
+    Данный метод обрабатывает однотипные запросы.
+
+    :param request: объект типа rest_framework.request.Request
+    :param model_name: строка, определяющая вспомогательную модель. 
+    Соответствует шаблону <app_lable>.<model_name>
+    :param id: id рецепта
+    
+    Метод создает, или удаляет, в зависимости от типа запроса вспомогательную
+    модель model_name с пользователем, отправившим запрос и recipe с id id.
+    Примеры вспомогательной модели - Follow, или Cart
+    """
+
     model = apps.get_model(model_name)
     if id is None or not Recipe.objects.filter(id=id).exists():
         return Response(
