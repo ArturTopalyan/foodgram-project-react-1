@@ -37,7 +37,7 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(
+    id = serializers.PrimaryKeyRelatedField(
         source='ingredient',
         queryset=Ingredient.objects.all()
     )
