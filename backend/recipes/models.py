@@ -59,7 +59,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         help_text='тэги рецепта',
-        through='TagInRecipe',
+        related_name='tags',
     )
     ingredients = models.ManyToManyField(
         Ingredient,
@@ -176,26 +176,3 @@ class IngridientInRecipe(models.Model):
             'ingridient': self.ingredient.name,
             'recipe': self.recipe.name,
         }
-
-
-class TagInRecipe(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        related_name='tags_in_recipe',
-        on_delete=models.CASCADE,
-    )
-    tag = models.ForeignKey(
-        Tag,
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        ordering = ('id',)
-        verbose_name = 'тэг рецепта'
-        verbose_name_plural = 'тэги рецепта'
-        constraints = (
-            constraints.UniqueConstraint(
-                fields=('tag', 'recipe'),
-                name='unique_tag_recipe',
-            ),
-        )

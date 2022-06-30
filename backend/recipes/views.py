@@ -63,6 +63,11 @@ class RecipeViewSet(ModelViewSet):
             return RecipeCreateSerializer
         return RecipeGetSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
+
     @action(
         url_path='shopping_cart',
         detail=True,

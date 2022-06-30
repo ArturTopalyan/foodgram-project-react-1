@@ -8,11 +8,6 @@ class IngredientInLine(admin.TabularInline):
     extra = 0
 
 
-class TagInLine(admin.TabularInline):
-    model = models.TagInRecipe
-    extra = 0
-
-
 @admin.register(models.Ingredient)
 class IngridientAdmin(admin.ModelAdmin):
     fields = (
@@ -38,6 +33,9 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'author',
     )
+    filter_horizontal = (
+        'tags',
+    )
     list_filter = (
         'author',
         'name',
@@ -45,7 +43,6 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     inlines = (
         IngredientInLine,
-        TagInLine,
     )
 
 
