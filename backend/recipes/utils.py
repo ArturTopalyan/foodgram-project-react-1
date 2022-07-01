@@ -23,8 +23,7 @@ def get_sub_exist(
     строку 'recipes.Recipe'
     """
 
-    app_lable, model_name = related_class.split('.')
-    model = apps.get_model(app_label=app_lable, model_name=model_name)
+    model = apps.get_model(related_class)
     if request is None or request.user.is_anonymous:
         return False
     kwargs[user_field or 'user'] = request.user
