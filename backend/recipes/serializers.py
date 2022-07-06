@@ -68,9 +68,8 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         read_only=True,
         many=False,
     )
-    tags = TagSerializer(
+    tags = serializers.SerializerMethodField(
         read_only=True,
-        many=True,
     )
     ingredients = serializers.SerializerMethodField(
         read_only=True,
@@ -97,6 +96,12 @@ class RecipeGetSerializer(serializers.ModelSerializer):
             many=True,
         ).data
 
+    def get_tags(self, obj):
+        return TagSerializer(
+            obj.tags.all(),
+            many=True,
+        ).data
+
     def get_is_in_shopping_cart(self, obj):
         return get_sub_exist(
             request=self.context.get('request'),
@@ -113,7 +118,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(use_url=True, max_length=None)
+    image = serializers.CharField(max_length=None, read_only=True) # Base64ImageField(use_url=True, max_length=None)
     author = UserGetSerializer(read_only=True)
     ingredients = IngredientRecipeSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
