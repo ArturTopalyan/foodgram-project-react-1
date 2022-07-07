@@ -97,18 +97,17 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorite',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='followers',
     )
 
     class Meta:
         ordering = ('user',)
         verbose_name = 'Любимый рецепт'
         verbose_name_plural = 'Любимые рецепты'
+        default_related_name = 'favorites'
         constraints = (
             constraints.UniqueConstraint(
                 fields=('user', 'recipe'),
@@ -176,14 +175,3 @@ class IngridientInRecipe(models.Model):
             'ingridient': self.ingredient.name,
             'recipe': self.recipe.name,
         }
-
-
-# class TagInRecipe(models.Model):
-#     tag = models.ForeignKey(
-#         Tag,
-#         on_delete=models.CASCADE,
-#     )
-#     recipe = models.ForeignKey(
-#         Recipe,
-#         on_delete=models.CASCADE,
-#     )
