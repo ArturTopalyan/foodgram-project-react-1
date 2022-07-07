@@ -163,7 +163,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             author=request.user,
             **validated_data
         )
-        recipe.save()
+        # recipe.save()
         recipe.tags.set(tags)
         self.create_ingredients(recipe, ingredients)
         return recipe
@@ -171,8 +171,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     @atomic
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
-        recipe = instance
-        IngridientInRecipe.objects.filter(recipe=instance).delete()
+        recipe = instance # для лучшей читаемости кода
+        IngridientInRecipe.objects.filter(recipe=recipe).delete()
         self.create_ingredients(recipe, ingredients)
         return super().update(recipe, validated_data)
 
