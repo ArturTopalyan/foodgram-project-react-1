@@ -119,7 +119,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     image = serializers.CharField(max_length=None, read_only=True)
-    # Base64ImageField(use_url=True, max_length=None)
+    Base64ImageField(use_url=True, max_length=None)
     author = UserGetSerializer(read_only=True)
     ingredients = IngredientRecipeSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
@@ -142,18 +142,18 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
 
     def create_ingredients(self, recipe, ingredients):
-        for ingredient in ingredients:
-            IngridientInRecipe.objects.create(
+        IngridientInRecipe.objects.bulk_create([
+            IngridientInRecipe(
                 recipe=recipe,
                 amount=ingredient['amount'],
                 ingredient=ingredient['ingredient'],
-            )
+            ) for ingredient in ingredients
+        ])
 
     @atomic
     def create(self, validated_data):
         request = self.context.get('request')
-        # ingredients =
-        validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(
             author=request.user,
@@ -161,7 +161,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         recipe.save()
         recipe.tags.set(tags)
-        # self.create_ingredients(recipe, ingredients)
+        self.create_ingredients(recipe, ingredients)
         return recipe
 
     @atomic
