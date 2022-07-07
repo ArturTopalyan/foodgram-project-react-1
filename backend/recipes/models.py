@@ -176,3 +176,14 @@ class IngridientInRecipe(models.Model):
             'ingridient': self.ingredient.name,
             'recipe': self.recipe.name,
         }
+
+
+class TagInRecipe(models.Model):
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.CASCADE,
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+    )
