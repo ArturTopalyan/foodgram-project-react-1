@@ -6,7 +6,6 @@ from django.core.files.base import ContentFile
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ImageField
 
-DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 ALLOWED_IMAGE_TYPES = (
     'jpeg',
     'jpg',
@@ -17,6 +16,7 @@ ALLOWED_IMAGE_TYPES = (
 
 class Base64ImageField(ImageField):
     def to_internal_value(self, base64_data):
+        base64_data = str(base64_data).split(',')[-1]
         if base64_data is None or len(base64_data) == 0:
             return None
         try:
