@@ -27,11 +27,11 @@ class Base64ImageField(ImageField):
         # data string is like 'data:image/png;base64,data...'
         file = data[0].split(':')[-1].split(';')[0]
         # file variable is like 'image/png'
-        if file.strip('/')[0] != 'image':
+        file_type, file_extension = file.split('/')
+        if file_type != 'image':
             raise ValidationError(
                 'Это не изображение'
             )
-        file_extension = file.split('/')[-1]
         if file_extension not in ALLOWED_IMAGE_TYPES:
             raise ValidationError(
                 'Неправильный формат изображения.'
