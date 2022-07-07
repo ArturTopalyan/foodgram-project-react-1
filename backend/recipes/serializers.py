@@ -163,9 +163,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             author=request.user,
             **validated_data
         )
-        # recipe.save()
-        recipe.tags.set(tags)
         self.create_ingredients(recipe, ingredients)
+        recipe.save()
+        recipe.tags.set(tags)
         return recipe
 
     @atomic
