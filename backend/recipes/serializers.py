@@ -1,5 +1,4 @@
 from django.db.transaction import atomic
-# from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from tags.models import Tag
 from tags.serializers import TagSerializer
@@ -7,6 +6,7 @@ from users.models import User
 from users.serializers import UserGetSerializer
 
 from .models import Ingredient, IngridientInRecipe, Recipe
+from .serializer_fields import Base64ImageField
 from .utils import get_sub_exist
 
 
@@ -41,13 +41,18 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         source='ingredient',
         queryset=Ingredient.objects.all()
     )
-    amount = serializers.IntegerField()
 
     class Meta:
         model = IngridientInRecipe
         fields = (
             'id',
             'amount',
+        )
+
+    def create(self, validated_data):
+        return IngridientInRecipe.objects.create(
+            ingredient=validated_data.get('id'),
+            amount=validated_data.get('amount')
         )
 
 
@@ -118,8 +123,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    image = serializers.CharField(max_length=None, read_only=True)
-    Base64ImageField(use_url=True, max_length=None)
+    image = Base64ImageField(use_url=True, max_length=None)
     author = UserGetSerializer(read_only=True)
     ingredients = IngredientRecipeSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
