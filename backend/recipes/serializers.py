@@ -1,5 +1,5 @@
 from django.db.transaction import atomic
-from drf_extra_fields.fields import Base64ImageField
+# from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from tags.models import Tag
 from tags.serializers import TagSerializer
@@ -118,7 +118,8 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    image = serializers.CharField(max_length=None, read_only=True) # Base64ImageField(use_url=True, max_length=None)
+    image = serializers.CharField(max_length=None, read_only=True)
+    # Base64ImageField(use_url=True, max_length=None)
     author = UserGetSerializer(read_only=True)
     ingredients = IngredientRecipeSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
