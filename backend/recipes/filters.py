@@ -1,4 +1,3 @@
-from django.db.models import query
 import django_filters
 from tags.models import Tag
 
