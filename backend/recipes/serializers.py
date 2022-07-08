@@ -241,9 +241,9 @@ class UserInSubscriptionsSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('view')
+        print(f'{request=}')
         if request is not None:
             limit = request
-            print(f'{limit=}')
             if limit is not None:
                 queryset = obj.recipes.all()[:3]
             else:
