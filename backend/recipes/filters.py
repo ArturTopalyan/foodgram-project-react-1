@@ -14,7 +14,7 @@ class RecipeFilter(django_filters.FilterSet):
         method='get_is_favorited',
     )
     is_in_shopping_cart = django_filters.NumberFilter(
-        method='get_in_shopping_cart',
+        method='get_is_in_shopping_cart',
     )
 
     class Meta:
