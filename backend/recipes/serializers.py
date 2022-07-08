@@ -241,9 +241,14 @@ class UserInSubscriptionsSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        limit = request.parser_context.get('request').GET.get('recipes_limit')
+        try:
+            limit = int(
+                request.parser_context.get('request').GET.get('recipes_limit')
+            )
+        except AttributeError:
+            limit = None
         if limit is not None:
-            queryset = obj.recipes.all()[:int(limit)]
+            queryset = obj.recipes.all()[:limit]
         else:
             queryset = obj.recipes.all()
         return RecipeShortInfo(
