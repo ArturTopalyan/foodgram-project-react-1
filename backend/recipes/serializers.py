@@ -246,9 +246,9 @@ class UserInSubscriptionsSerializer(serializers.ModelSerializer):
             if limit is not None:
                 queryset = obj.recipes.all()[:limit]
             else:
-                queryset = obj.recipe.all()
+                queryset = obj.recipes.all()
         else:
-            queryset = obj.recipe.all()
+            queryset = obj.recipes.all()
         return RecipeShortInfo(
             queryset,
             many=True
