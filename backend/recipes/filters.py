@@ -32,8 +32,11 @@ class RecipeFilter(django_filters.FilterSet):
                 return queryset.filter(favorites__user=self.request.user)
             case 0:
                 return queryset.exclude(favorites__user=self.request.user)
+            # flake8 ругался, что функция ничего не возвращает и пришлось
+            # в крайнем случае ничего не делать
             case _:
-                return queryset
+                pass
+        return queryset
 
     def get_is_in_shopping_cart(self, queryset, name, value):
         match value:
@@ -42,17 +45,17 @@ class RecipeFilter(django_filters.FilterSet):
             case 0:
                 return queryset.exclude(carts__user=self.request.user)
             case _:
-                return queryset
+                pass
+        return queryset
 
 
 class IngredientFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(
-        field_name='name',
-        lookup_expr='icontains',
-    )
-
     class Meta:
-        fields = (
-            'name',
-        )
+        fields = {
+            'name': (
+                'iexact',
+                'istartswith',
+                'icontains',
+            ),
+        }
         model = Ingredient
