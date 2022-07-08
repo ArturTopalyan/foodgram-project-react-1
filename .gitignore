@@ -62,6 +62,7 @@ db.sqlite3
 db.sqlite3-journal
 media/
 django_media/
+django_static/
 
 # Flask stuff:
 instance/
