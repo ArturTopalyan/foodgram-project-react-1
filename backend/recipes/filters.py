@@ -1,3 +1,4 @@
+from django.db.models import query
 import django_filters
 from tags.models import Tag
 
@@ -27,25 +28,17 @@ class RecipeFilter(django_filters.FilterSet):
         )
 
     def get_is_favorited(self, queryset, name, value):
-        match value:
-            case 1:
+        if value and not self.request.user.is_anonymous:
+            if value == 1:
                 return queryset.filter(favorites__user=self.request.user)
-            case 0:
-                return queryset.exclude(favorites__user=self.request.user)
-            # flake8 ругался, что функция ничего не возвращает и пришлось
-            # в крайнем случае ничего не делать
-            case _:
-                pass
+            return queryset.exclude(favorites__user=self.request.user)
         return queryset
 
     def get_is_in_shopping_cart(self, queryset, name, value):
-        match value:
-            case 1:
+        if value and not self.request.user.is_anonymous:
+            if value == 1:
                 return queryset.filter(carts__user=self.request.user)
-            case 0:
-                return queryset.exclude(carts__user=self.request.user)
-            case _:
-                pass
+            return queryset.exclude(carts__user=self.request.user)
         return queryset
 
 
