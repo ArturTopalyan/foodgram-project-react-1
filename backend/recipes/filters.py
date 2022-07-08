@@ -50,12 +50,13 @@ class RecipeFilter(django_filters.FilterSet):
 
 
 class IngredientFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(
+        field_name='name',
+        lookup_expr='icontains',
+    )
+
     class Meta:
-        fields = {
-            'name': (
-                'iexact',
-                'istartswith',
-                'icontains',
-            ),
-        }
+        fields = (
+            'name',
+        )
         model = Ingredient
