@@ -31,10 +31,10 @@ class FollowUnfollowUser(APIView):
             user=request.user,
             author=id,
         ).exists():
-            Follow.objects.delete(
+            Follow.objects.get(
                 user=request.user,
                 author=id,
-            )
+            ).delete()
             return Response(
                 {'success': 'success'},
                 status=status.HTTP_204_NO_CONTENT,
