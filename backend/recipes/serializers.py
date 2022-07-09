@@ -179,10 +179,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return super().update(recipe, validated_data)
 
     def validate_ingredients(self, data):
-        if len(data) != len(set(data)):
-            raise serializers.ValidationError({
-                'ingredients': 'Дублей быть не должно!',
-            })
+        # if len(data) != len(set(data)):
+        #     raise serializers.ValidationError({
+        #         'ingredients': 'Дублей быть не должно!',
+        #     })
         for ingredient in data:
             if int(ingredient['amount']) < 1:
                 raise serializers.ValidationError({
