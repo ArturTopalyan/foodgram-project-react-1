@@ -6,6 +6,6 @@ urlpatterns = [
     path(
         'users/<slug:id>/subscribe/',
         FollowUnfollowUser.as_view(),
-        'users_follow',
+        name='users_follow',
     ),
 ]
