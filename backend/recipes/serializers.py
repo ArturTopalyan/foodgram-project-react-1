@@ -179,13 +179,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return super().update(recipe, validated_data)
 
     def validate_ingredients(self, data):
-        print(data)
-        ingredients = data.get('ingredients')
-        if len(ingredients) != len(set(ingredients)):
+        if len(data) != len(set(data)):
             raise serializers.ValidationError({
                 'ingredients': 'Дублей быть не должно!',
             })
-        for ingredient in ingredients:
+        for ingredient in data:
             if int(ingredient['amount']) < 1:
                 raise serializers.ValidationError({
                     'ingredients': (
@@ -195,7 +193,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return data
 
     def validate_cooking_time(self, data):
-        if int(data.get('cooking_time')) < 1:
+        if int(data) < 1:
             raise serializers.ValidationError({
                 'cooking_time': 'Время приготовления должно быть больше 1'
             })
