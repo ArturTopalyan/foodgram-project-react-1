@@ -87,10 +87,9 @@ class CustomUserManager(UserManager):
         for field in true_fields:
             extra_fields.setdefault(field, True)
         extra_fields.setdefault('is_blocked', False)
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+        for field in true_fields:
+            if not extra_fields.get(field):
+                raise ValueError('Superuser must have %s=True.' % field)
         return self._create_user(
             username,
             email,

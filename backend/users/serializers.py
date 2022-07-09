@@ -1,5 +1,6 @@
-from recipes.utils import get_sub_exist
 from rest_framework import serializers
+
+from recipes.utils import get_sub_exist
 
 from .models import User
 

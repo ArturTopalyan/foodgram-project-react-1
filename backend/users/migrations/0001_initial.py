@@ -6,9 +6,10 @@ import django.contrib.auth.validators
 import django.db.models.deletion
 import django.db.models.expressions
 import django.utils.timezone
-import users.managers
 from django.conf import settings
 from django.db import migrations, models
+
+import users.managers
 
 
 class Migration(migrations.Migration):

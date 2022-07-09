@@ -3,6 +3,7 @@ from csv import DictReader
 
 from django.conf import settings as config
 from django.core.management.base import BaseCommand
+
 from tags.models import Tag
 
 DATA_PATH = os.path.join(config.BASE_DIR, 'data/tags.csv')

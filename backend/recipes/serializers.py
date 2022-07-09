@@ -1,5 +1,6 @@
 from django.db.transaction import atomic
 from rest_framework import serializers
+
 from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.models import User
@@ -73,11 +74,13 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         read_only=True,
         many=False,
     )
-    tags = serializers.SerializerMethodField(
+    tags = TagSerializer(
+        many=True,
         read_only=True,
     )
-    ingredients = serializers.SerializerMethodField(
+    ingredients = IngredientInRecipeSerializer(
         read_only=True,
+        many=True,
     )
 
     class Meta:
@@ -95,17 +98,17 @@ class RecipeGetSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def get_ingredients(self, obj):
-        return IngredientInRecipeSerializer(
-            obj.ingridients_in_recipe.all(),
-            many=True,
-        ).data
-
-    def get_tags(self, obj):
-        return TagSerializer(
-            obj.tags.all(),
-            many=True,
-        ).data
+    # def get_ingredients(self, obj):
+    #     return IngredientInRecipeSerializer(
+    #         obj.ingridients_in_recipe.all(),
+    #         many=True,
+    #     ).data
+    #
+    # def get_tags(self, obj):
+    #     return TagSerializer(
+    #         obj.tags.all(),
+    #         many=True,
+    #    ).data
 
     def get_is_in_shopping_cart(self, obj):
         return get_sub_exist(
@@ -164,7 +167,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             **validated_data
         )
         self.create_ingredients(recipe, ingredients)
-        recipe.save()
         recipe.tags.set(tags)
         return recipe
 
@@ -177,15 +179,22 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return super().update(recipe, validated_data)
 
     def validate_ingredients(self, data):
-        for ingredient in self.initial_data.get('ingredients'):
+        ingredients = data.get('ingredients')
+        if len(ingredients) != len(set(ingredients)):
+            raise serializers.ValidationError({
+                'ingredients': 'Дублей быть не должно!',
+            })
+        for ingredient in ingredients:
             if int(ingredient['amount']) < 1:
                 raise serializers.ValidationError({
-                    'ingredient': 'Количество ингридиента должно быть больше 1'
+                    'ingredients': (
+                        'Количество ингридиента должно быть больше 1'
+                    ),
                 })
         return data
 
     def validate_cooking_time(self, data):
-        if int(self.initial_data.get('cooking_time')) < 1:
+        if int(data.get('cooking_time')) < 1:
             raise serializers.ValidationError({
                 'cooking_time': 'Время приготовления должно быть больше 1'
             })
