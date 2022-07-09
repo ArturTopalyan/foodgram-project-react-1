@@ -179,6 +179,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return super().update(recipe, validated_data)
 
     def validate_ingredients(self, data):
+        print(data)
         ingredients = data.get('ingredients')
         if len(ingredients) != len(set(ingredients)):
             raise serializers.ValidationError({
