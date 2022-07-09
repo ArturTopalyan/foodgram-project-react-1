@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponse
+from django.db.models.aggregates import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
@@ -9,7 +10,7 @@ from rest_framework.viewsets import (GenericViewSet, ModelViewSet,
 
 from .filters import IngredientFilter, RecipeFilter
 from .local_utils import sub_action
-from .models import Ingredient, Recipe
+from .models import Ingredient, Recipe, IngridientInRecipe
 from .permissions import AuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeGetSerializer, UserInSubscriptionsSerializer)
@@ -62,28 +63,25 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        ingredients = [
-            cart.recipe.ingridients_in_recipe.all()
-            for cart in request.user.carts.all()
-        ]
-        shopping_list = {}
-        for ingredient_recipe in ingredients:
-            name = ingredient_recipe.ingredient.name
-            amount = ingredient_recipe.amount
-            meas_unit = ingredient_recipe.ingredient.measurement_unit
-            if name in shopping_list:
-                shopping_list[name]['amount'] += amount
-            else:
-                shopping_list[name] = {
-                    'amount': amount,
-                    'measurement_unit': meas_unit,
-                }
+        shopping_list = IngridientInRecipe.objects.filter(
+            recipe__carts__user=request.user,
+        ).values(   # returns list or dicts like [{'ingredient__name': ...},.]
+            'ingredient__name',
+            'ingredient__measurement_unit',
+        ).annotate(
+            amount=Sum(
+                'amount',
+                filter=IngridientInRecipe.objects.filter(
+                    'ingredient__name'
+                )
+            )
+        )
         cart = [
             '%(name)s %(amount)s %(measurement_unit)s\n' % {
-                'name': name,
+                'name': data['ingredient__name'],
                 'amount': data['amount'],
-                'measurement_unit': data['measurement_unit'],
-            } for name, data in shopping_list.items()
+                'measurement_unit': data['ingredient__measurement_unit'],
+            } for data in shopping_list
         ]
         response = HttpResponse(
             cart,
