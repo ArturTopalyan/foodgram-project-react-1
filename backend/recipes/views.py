@@ -68,14 +68,7 @@ class RecipeViewSet(ModelViewSet):
         ).values(   # returns list or dicts like [{'ingredient__name': ...},.]
             'ingredient__name',
             'ingredient__measurement_unit',
-        ).annotate(
-            amount=Sum(
-                'amount',
-                filter=IngridientInRecipe.objects.filter(
-                    'ingredient__name'
-                )
-            )
-        )
+        ).annotate(amount=Sum('amount'))
         cart = [
             '%(name)s %(amount)s %(measurement_unit)s\n' % {
                 'name': data['ingredient__name'],
