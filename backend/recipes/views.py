@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.http.response import HttpResponse
-from django.db.models.aggregates import Sum
+from django.db.models.aggregates import Count, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
@@ -63,12 +64,16 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        shopping_list = IngridientInRecipe.objects.filter(
-            recipe__carts__user=request.user,
-        ).values(   # returns list or dicts like [{'ingredient__name': ...},.]
+        shopping_list = IngridientInRecipe.objects.values(
             'ingredient__name',
             'ingredient__measurement_unit',
-        ).annotate(amount=Sum('amount'))
+        ).filter(
+            recipe__carts__user=request.user,
+        ).annotate(
+            amount=Sum(
+                'amount',
+            ),
+        )
         cart = [
             '%(name)s %(amount)s %(measurement_unit)s\n' % {
                 'name': data['ingredient__name'],
