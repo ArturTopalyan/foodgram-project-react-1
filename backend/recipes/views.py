@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.db.models.aggregates import Sum
 from django.http.response import HttpResponse
-from django.db.models.aggregates import Count, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
@@ -10,7 +10,7 @@ from rest_framework.viewsets import (GenericViewSet, ModelViewSet,
 
 from .filters import IngredientFilter, RecipeFilter
 from .local_utils import sub_action
-from .models import Ingredient, Recipe, IngridientInRecipe
+from .models import Ingredient, IngridientInRecipe, Recipe
 from .permissions import AuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeGetSerializer, UserInSubscriptionsSerializer)
