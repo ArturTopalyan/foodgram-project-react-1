@@ -50,6 +50,16 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
             'amount',
         )
 
+    def validate_amount(self, data):
+        if int(data) < 1:
+            raise serializers.ValidationError({
+                'ingredients': (
+                    'Количество ингридиента должно быть больше 1'
+                ),
+                'msg': data
+            })
+        return data
+
     def create(self, validated_data):
         return IngridientInRecipe.objects.create(
             ingredient=validated_data.get('id'),
@@ -81,6 +91,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
     ingredients = IngredientInRecipeSerializer(
         read_only=True,
         many=True,
+        source='ingridients_in_recipe',
     )
 
     class Meta:
@@ -97,18 +108,6 @@ class RecipeGetSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
-
-    # def get_ingredients(self, obj):
-    #     return IngredientInRecipeSerializer(
-    #         obj.ingridients_in_recipe.all(),
-    #         many=True,
-    #     ).data
-    #
-    # def get_tags(self, obj):
-    #     return TagSerializer(
-    #         obj.tags.all(),
-    #         many=True,
-    #    ).data
 
     def get_is_in_shopping_cart(self, obj):
         return get_sub_exist(
@@ -179,17 +178,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return super().update(recipe, validated_data)
 
     def validate_ingredients(self, data):
-        # if len(data) != len(set(data)):
-        #     raise serializers.ValidationError({
-        #         'ingredients': 'Дублей быть не должно!',
-        #     })
+        validated = []
         for ingredient in data:
-            if int(ingredient['amount']) < 1:
+            if ingredient in validated:
                 raise serializers.ValidationError({
-                    'ingredients': (
-                        'Количество ингридиента должно быть больше 1'
-                    ),
+                    'ingredients': 'Дублей быть не должно!',
                 })
+            validated.append(ingredient)
         return data
 
     def validate_cooking_time(self, data):
