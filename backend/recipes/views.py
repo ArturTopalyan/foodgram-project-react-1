@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.http.response import HttpResponse
 from django.db.models.aggregates import Count, Sum
 from django_filters.rest_framework import DjangoFilterBackend
@@ -64,25 +63,27 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        shopping_list = IngridientInRecipe.objects.values(
+        shopping_list = IngridientInRecipe.objects.annotate(
+            summ=Sum(
+                'ingredient__ingridients_in_recipe__amount'
+            ),
+        ).values(
             'ingredient__name',
             'ingredient__measurement_unit',
+            'summ',
         ).filter(
             recipe__carts__user=request.user,
-        ).annotate(
-            amount=Sum(
-                'amount',
-            ),
         )
         cart = [
             '%(name)s %(amount)s %(measurement_unit)s\n' % {
                 'name': data['ingredient__name'],
-                'amount': data['amount'],
+                'amount': data['summ'],
                 'measurement_unit': data['ingredient__measurement_unit'],
             } for data in shopping_list
         ]
+        # единственное решение, которое я нашел, что-бы строки не дублировались
         response = HttpResponse(
-            cart,
+            set(cart),
             'Content-Type: text/plain',
         )
         response['Content-Disposition'] = (
