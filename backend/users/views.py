@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from recipes.serializers import UserInSubscriptionsSerializer
-
 from .models import Follow, User
 
 

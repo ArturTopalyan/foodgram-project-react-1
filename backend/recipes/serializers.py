@@ -5,7 +5,6 @@ from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.models import User
 from users.serializers import UserGetSerializer
-
 from .models import Ingredient, IngridientInRecipe, Recipe
 from .serializer_fields import Base64ImageField
 from .utils import get_sub_exist
@@ -180,7 +179,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def validate_ingredients(self, data):
         validated = []
         for ingredient in data:
-            if ingredient in validated:
+            if ingredient in validated or ingredient['amount'] < 1:
                 raise serializers.ValidationError({
                     'ingredients': 'Дублей быть не должно!',
                 })
