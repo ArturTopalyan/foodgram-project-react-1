@@ -1,6 +1,5 @@
 from django.db.transaction import atomic
 from rest_framework import serializers
-from rest_framework.utils.representation import serializer_repr
 
 from tags.models import Tag
 from tags.serializers import TagSerializer
