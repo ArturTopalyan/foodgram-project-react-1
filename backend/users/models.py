@@ -74,6 +74,8 @@ class Follow(models.Model):
                 name='author_is_not_follower',
             ),
         )
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
 
     def __str__(self):
         return '%(user)s following %(author)s' % {
