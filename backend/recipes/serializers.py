@@ -1,5 +1,6 @@
 from django.db.transaction import atomic
 from rest_framework import serializers
+from rest_framework.utils.representation import serializer_repr
 
 from tags.models import Tag
 from tags.serializers import TagSerializer
@@ -179,9 +180,15 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def validate_ingredients(self, data):
         validated = []
         for ingredient in data:
-            if ingredient in validated or ingredient['amount'] < 1:
+            if ingredient in validated:
                 raise serializers.ValidationError({
                     'ingredients': 'Дублей быть не должно!',
+                })
+            if ingredient['amount'] < 1:
+                raise serializers.ValidationError({
+                    'ingredients': (
+                        'Количество ингредиента должно быть не меньше 1'
+                    ),
                 })
             validated.append(ingredient)
         return data
