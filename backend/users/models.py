@@ -74,3 +74,9 @@ class Follow(models.Model):
                 name='author_is_not_follower',
             ),
         )
+
+    def __str__(self):
+        return '%(user)s following %(author)s' % {
+            'user': self.user,
+            'author': self.author,
+        }
