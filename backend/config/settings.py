@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'backend',
     'marlo.sytes.net',
+    'foodgram.marlo.keenetic.link',
 ]
 
 INSTALLED_APPS = [
